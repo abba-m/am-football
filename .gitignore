@@ -3,3 +3,40 @@ client/node_modules
 /server/pb_*
 */**/.DS_Store
 .DS_Store
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# CLIENT
+# Logs
+client/logs
+client/*.log
+client/npm-debug.log*
+client/yarn-debug.log*
+client/yarn-error.log*
+client/pnpm-debug.log*
+client/lerna-debug.log*
+
+
+client/dist
+client/dist-ssr
+client/*.local
+
+# CLIENT - Editor directories and files
+client/.vscode/*
+client/!.vscode/extensions.json
+client/.idea
+client/.DS_Store
+client/*.suo
+client/*.ntvs*
+client/*.njsproj
+client/*.sln
+client/*.sw?

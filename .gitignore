@@ -1,0 +1,5 @@
+client/node_modules
+/server/pocketbase
+/server/pb_*
+*/**/.DS_Store
+.DS_Store

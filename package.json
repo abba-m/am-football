@@ -1,0 +1,11 @@
+{
+  "name": "am-football",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "yarn start:server && yarn start:client",
+    "start:server": "./server/pocketbase serve",
+    "start:client": "yarn --cwd client dev"
+  }
+}

@@ -22,6 +22,7 @@ import {
 import { ElementRef, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { AuthComponentProps } from './auth.interface';
+import _ from 'lodash';
 
 /** components */
 import GoogleButton from '../buttons/googleButton';
@@ -30,6 +31,8 @@ import FacebookButton from '../buttons/facebookButton';
 /** Icons and assets */
 import loginDivider from '../../assets/images/loginOrWithDivider.svg';
 import { unimplemented } from './auth.utils';
+import { UserAttr, useCurrentUserStore } from '../../store/auth';
+import { pocketbase } from '../../pocketbase';
 
 export default function Register({
   isOpen,
@@ -54,6 +57,8 @@ export default function Register({
     onClose();
   };
 
+  const { setUser, setToken } = useCurrentUserStore();
+
   const handleClose = () => {
     reset();
     onClose();
@@ -62,7 +67,46 @@ export default function Register({
   const toggleShowPassword = () => setShowPassword(!showPassword);
 
   const handleRegister = async (data: Record<string, string>) => {
-    console.log('[register data]:', data);
+    setLoading(true);
+    const user: UserAttr & Record<'password' | 'passwordConfirm', string> = {
+      email: data.email,
+      name: `${data.firstName} ${data.lastName}`,
+      password: data.password,
+      passwordConfirm: data.password,
+      emailVisibility: true,
+      username: data.email.split('@')[0],
+    };
+    try {
+      const record = await pocketbase.collection('users').create(user);
+
+      _.omit(record, ['collectionName', 'collectionId']);
+
+      const authData = await pocketbase
+        .collection('users')
+        .authWithPassword(String(user.email), user.password);
+
+      setToken(authData.token)
+      setUser(authData.record as UserAttr);
+
+      toast({
+        position: 'top',
+        title: 'Account created successfully',
+        status: 'success',
+        isClosable: true,
+      });
+
+      onClose();
+      reset();
+    } catch (error: any) {
+      toast({
+        position: 'top',
+        title: error?.data?.message || 'Failed to create account',
+        status: 'error',
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

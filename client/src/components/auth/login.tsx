@@ -39,10 +39,14 @@ import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import loginDivider from '../../assets/images/loginOrWithDivider.svg';
 import { AuthComponentProps } from './auth.interface';
 import { unimplemented } from './auth.utils';
+import { pocketbase } from '../../pocketbase';
+import { UserAttr, useCurrentUserStore } from '../../store/auth';
 
-
-
-export default function Login({ isOpen, onClose, openRegister }: AuthComponentProps) {
+export default function Login({
+  isOpen,
+  onClose,
+  openRegister,
+}: AuthComponentProps) {
   const initialRef = useRef<ElementRef<'form'>>(null);
   const toast = useToast();
   const navigate = useNavigate();
@@ -57,6 +61,8 @@ export default function Login({ isOpen, onClose, openRegister }: AuthComponentPr
     reset,
     formState: { errors },
   } = useForm();
+
+  const { setUser, setToken } = useCurrentUserStore();
 
   const handleRegisterClick = () => {
     typeof openRegister === 'function' && openRegister();
@@ -74,8 +80,50 @@ export default function Login({ isOpen, onClose, openRegister }: AuthComponentPr
     navigate('/reset-password');
   };
 
-  const handleLogin = async (data: Record<string, string>) => {
-    console.log('[login data]:', data);
+  const handleLogin = async ({
+    email,
+    password,
+  }: Record<string, string>) => {
+    setLoading(true);
+
+    if (!email || !password)
+      toast({
+        position: 'top',
+        title: 'Email and password are required',
+        status: 'error',
+        isClosable: true,
+      });
+
+    try {
+      const authData = await pocketbase
+        .collection('users')
+        .authWithPassword(email, password);
+
+      setToken(authData.token);
+      console.log('[authdata]:', authData.record);
+      setUser(authData.record as UserAttr);
+
+      toast({
+        position: 'top',
+        title: 'Account created successfully',
+        status: 'success',
+        isClosable: true,
+      });
+
+      onClose();
+      reset();
+    } catch (error: any) {
+      toast({
+        position: 'top',
+        title: error?.data?.code == 400
+            ? 'Invalid login credentials'
+            : error?.data?.message || 'Failed to create account',
+        status: 'error',
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -91,15 +139,15 @@ export default function Login({ isOpen, onClose, openRegister }: AuthComponentPr
               <Input
                 type="text"
                 w="100%"
-                {...register('identifier', {
-                  required: 'Email or Phone number is required for sign in',
+                {...register('email', {
+                  required: 'Email is required for sign in',
                 })}
                 bg="#FAF3F391"
-                placeholder="Email or Phone number"
+                placeholder="Email"
               />
 
               <FormErrorMessage>
-                {errors.identifier && String(errors.identifier.message)}
+                {errors.email && String(errors.email.message)}
               </FormErrorMessage>
             </FormControl>
 

@@ -7,7 +7,7 @@ const primary = defineStyle({
   background: PRIMARY,
   color: 'white',
   _hover: {
-    background: '#0987A0',
+    background: '#4A5568',
     outline: 'none',
     borderColor: 'transparent',
   },

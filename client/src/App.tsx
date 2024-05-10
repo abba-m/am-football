@@ -8,8 +8,6 @@ import TeamsPage from './pages/teams/teams';
 import Footer from './components/footer/footer';
 import NavBar from './components/nav/nav';
 
-import { getUsers } from './pocketbase';
-import { useEffect } from 'react';
 import NotFound from './components/notFound';
 
 /*
@@ -21,11 +19,6 @@ TASKS
 */
 
 function App() {
-
-  useEffect(() => {
-    getUsers();
-}, [])
-
   return (
     <Router>
       <Box h="100dvh">

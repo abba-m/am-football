@@ -4,15 +4,22 @@ import {
   Flex,
   Grid,
   Heading,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItem,
+  MenuList,
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import NavItem from '../navItem/navItem';
 import Login from '../auth/login';
 import Register from '../auth/register';
+import { UserAttr, useCurrentUserStore } from '../../store/auth';
+import { FiSettings } from 'react-icons/fi';
+import { AiOutlinePoweroff } from 'react-icons/ai';
 
 const routes = [
   {
@@ -53,12 +60,42 @@ const LoginButton = ({ openLogin }: Record<'openLogin', () => void>) => {
   );
 };
 
+const ProfileMenu = ({
+  currentUser,
+  logout,
+}: {
+  currentUser: UserAttr;
+  logout: () => void;
+}) => (
+  <Menu>
+    <MenuButton>
+      <Avatar
+        name={currentUser?.name || 'New User'}
+        src={currentUser.avatar || 'https://bit.ly/dan-abramov'}
+      />
+    </MenuButton>
+    <MenuList>
+      <MenuItem>
+        <Heading as="h5" size="sm">
+          {currentUser?.name}
+        </Heading>
+      </MenuItem>
+      <MenuDivider />
+
+      <MenuItem>
+        <FiSettings style={{ marginRight: '.7rem' }} /> Settings
+      </MenuItem>
+      <MenuDivider />
+      <MenuItem color="red.500" onClick={logout}>
+        <AiOutlinePoweroff style={{ marginRight: '.7rem' }} /> Log out
+      </MenuItem>
+    </MenuList>
+  </Menu>
+);
+
 export default function Nav() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentUser, setCurrentUser] = useState({
-    name: 'Dan Abramov',
-    avatar: 'https://bit.ly/dan-abramov',
-  });
+  const { user: currentUser, clearUser: logout } = useCurrentUserStore();
+  const isAuthenticated = !!currentUser?.id;
 
   const {
     isOpen: isLoginOpen,
@@ -94,9 +131,7 @@ export default function Nav() {
       <Flex justifyContent="flex-end" alignItems="center">
         <Box pr="4rem">
           {isAuthenticated ? (
-            <Link to="/profile">
-              <Avatar name={currentUser.name} src={currentUser.avatar} />
-            </Link>
+            <ProfileMenu currentUser={currentUser} logout={logout} />
           ) : (
             <LoginButton openLogin={openLogin} />
           )}

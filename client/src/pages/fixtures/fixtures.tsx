@@ -1,9 +1,9 @@
-import { Box, Heading } from "@chakra-ui/react";
+import { Container, Heading } from '@chakra-ui/react';
 
 export default function Fixtures() {
   return (
-    <Box>
-      <Heading>Fixtures Page</Heading> 
-    </Box>
-  )
+    <Container maxW="1440px" minH="80dvh">
+      <Heading>Fixtures Page</Heading>
+    </Container>
+  );
 }

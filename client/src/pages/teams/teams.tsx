@@ -1,9 +1,9 @@
-import { Box, Heading } from "@chakra-ui/react";
+import { Container, Heading } from '@chakra-ui/react';
 
 export default function Teams() {
   return (
-    <Box>
+    <Container maxW="1440px" minH="80dvh">
       <Heading>Teams Page</Heading>
-    </Box>
-  )
+    </Container>
+  );
 }

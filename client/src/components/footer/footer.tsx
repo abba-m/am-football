@@ -7,7 +7,7 @@ import {
 
 export default function Footer() {
   return (
-    <Box w="100%" bg="primary" h="80px" position="fixed" py="10px" bottom="0">
+    <Box w="100%" bg="primary" h="70px" position="fixed" py="10px" bottom="0">
       <Box
         display="flex"
         mx="auto"
@@ -17,7 +17,7 @@ export default function Footer() {
         color={'white'}
       >
         <Stack direction="column" alignItems="center">
-          <Heading as={'h5'} size="md">
+          <Heading as={'h6'} size="sm">
             ©{new Date().getFullYear()} AM Sporting, Inc.
           </Heading>
           <Stack direction="row" spacing="1.8rem">

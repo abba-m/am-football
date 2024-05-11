@@ -1,7 +1,7 @@
 import { extendTheme, defineStyle, defineStyleConfig } from '@chakra-ui/react';
 
 const PRIMARY = '#1D222B';
-const SECONDARY = '#285E61';
+export const SECONDARY = '#285E61';
 
 const primary = defineStyle({
   background: PRIMARY,

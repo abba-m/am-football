@@ -20,30 +20,19 @@ import { useEffect, useState } from 'react';
 import { pocketbase } from '../../pocketbase';
 import PageLoader from '../../components/loader';
 import { resolveFile } from '../../utils';
+import { TeamAttr } from '../../interfaces';
 
 const COL_SPAN = 3;
 
-interface Team {
-  coach: string;
-  collectionId: string;
-  collectionName: string;
-  created: string;
-  id: string;
-  logo: string;
-  name: string;
-  stadium: string;
-  updated: string;
-}
-
 export default function Teams() {
   const [loading, setLoading] = useState(false);
-  const [teams, setTeams] = useState<Team[]>([]);
+  const [teams, setTeams] = useState<TeamAttr[]>([]);
   const toast = useToast();
 
   const fetchTeams = async () => {
     setLoading(true);
     try {
-      const teams = await pocketbase.collection<Team>('team').getFullList();
+      const teams = await pocketbase.collection<TeamAttr>('team').getFullList();
       setTeams(teams);
     } catch (error: any) {
       if (error?.data?.code)

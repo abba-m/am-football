@@ -1,6 +1,9 @@
 client/node_modules
+
+# SERVER
+/server/pb_data
 /server/pocketbase
-/server/pb_*
+
 */**/.DS_Store
 .DS_Store
 

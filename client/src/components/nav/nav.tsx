@@ -20,6 +20,7 @@ import Register from '../auth/register';
 import { UserAttr, useCurrentUserStore } from '../../store/auth';
 import { FiSettings } from 'react-icons/fi';
 import { AiOutlinePoweroff } from 'react-icons/ai';
+import { useAdminStore } from '../../store/admin.store';
 
 const routes = [
   {
@@ -95,6 +96,7 @@ const ProfileMenu = ({
 
 export default function Nav() {
   const { user: currentUser, clearUser: logout } = useCurrentUserStore();
+  const { isAuthenticated: isAdmin, admin } = useAdminStore();
   const isAuthenticated = !!currentUser?.id;
 
   const {
@@ -109,33 +111,40 @@ export default function Nav() {
   } = useDisclosure();
 
   return (
-    <Grid
-      templateColumns="1fr 2fr 1fr"
+    <Flex
       bg="primary"
-      w="100vw"
-      h="70px"
-      px="1rem"
+      minH="70px"
+      px={{ base: '15px', md: '1rem' }}
+      role="navigation"
     >
-      <Flex justifyContent="flex-start" alignItems="center">
+      <Flex justifyContent="flex-start" alignItems="center" flex="1">
         <Link to="/">
           <Heading as="h4" size={'md'} color="whitesmoke">
             AM Sporting
           </Heading>
         </Link>
       </Flex>
-      <Flex justifyContent="center" gap={4} alignItems="center">
+      <Flex flex="2" justifyContent="center" gap={4} alignItems="center">
         {routes.map((route) => (
           <NavItem {...route} key={route.to} />
         ))}
       </Flex>
-      <Flex justifyContent="flex-end" alignItems="center">
-        <Box pr="4rem">
-          {isAuthenticated ? (
-            <ProfileMenu currentUser={currentUser} logout={logout} />
-          ) : (
-            <LoginButton openLogin={openLogin} />
-          )}
-        </Box>
+      <Flex flex="1" justifyContent="flex-end" alignItems="center">
+        {isAdmin ? (
+          <Box pr={{ base: '1rem', md: '4rem' }}>
+            <Link to="/admin-home">
+              <Text color="whitesmoke">{'Admin ' + admin?.email?.split('@')[0]}</Text>
+            </Link>
+          </Box>
+        ) : (
+          <Box pr={{ base: '1rem', md: '4rem' }}>
+            {isAuthenticated ? (
+              <ProfileMenu currentUser={currentUser} logout={logout} />
+            ) : (
+              <LoginButton openLogin={openLogin} />
+            )}
+          </Box>
+        )}
       </Flex>
       <Login
         isOpen={isLoginOpen}
@@ -147,6 +156,6 @@ export default function Nav() {
         onClose={closeRegister}
         openLogin={openLogin}
       />
-    </Grid>
+    </Flex>
   );
 }

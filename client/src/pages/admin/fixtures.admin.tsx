@@ -1,22 +1,15 @@
-import {
-  Box,
-  Card,
-  Container,
-  Divider,
-  Flex,
-  Heading,
-  Text,
-} from '@chakra-ui/react';
+import { Box, Card, Divider, Heading } from '@chakra-ui/react';
 import LeagueMenu from '../../components/cards/leagueMenu';
-import { useEffect, useState } from 'react';
-import { pocketbase } from '../../pocketbase';
 import { useLeagueStore } from '../../store/league';
+import { useEffect, useState } from 'react';
 import { FixtureAttr } from '../../interfaces';
+import { pocketbase } from '../../pocketbase';
 import FixtureCard from '../../components/cards/fixtureCard';
 
-export default function Fixtures() {
+export default function AdminFixtures() {
   const currentLeague = useLeagueStore((state) => state.currentLeague);
   const [fixtures, setFixtures] = useState<FixtureAttr[]>([]);
+  const [manageFixture, setManageFixture] = useState<FixtureAttr | null>(null);
 
   const fetchFixtures = async () => {
     try {
@@ -38,9 +31,7 @@ export default function Fixtures() {
   }, [currentLeague]);
 
   return (
-    <Container background="gray.200" maxW="1440px" minH="80dvh">
-      <Box h={4}></Box>
-      {/* League */}
+    <Box flex={1}>
       <LeagueMenu />
 
       <Box h={4}></Box>
@@ -48,7 +39,7 @@ export default function Fixtures() {
         {fixtures?.length ? (
           fixtures.map((fixture) => (
             <Box key={fixture.id}>
-              <FixtureCard fixture={fixture} />
+              <FixtureCard admin={true} fixture={fixture} />
               <Divider my={2} />
             </Box>
           ))
@@ -56,8 +47,6 @@ export default function Fixtures() {
           <Heading>No fixtures for {currentLeague?.title} yet</Heading>
         )}
       </Card>
-
-      <Box h={4}></Box>
-    </Container>
+    </Box>
   );
 }

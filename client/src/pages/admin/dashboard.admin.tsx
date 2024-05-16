@@ -1,6 +1,7 @@
 import {
   Avatar,
   Box,
+  BoxProps,
   Card,
   CardBody,
   CardHeader,
@@ -22,8 +23,8 @@ import {
   TableContainer,
   Tag,
   HStack,
+  SimpleGrid,
 } from '@chakra-ui/react';
-import { PiGreaterThanBold } from 'react-icons/pi';
 import { TfiLocationPin } from 'react-icons/tfi';
 import { Link } from 'react-router-dom';
 import LeagueMenu from '../../components/cards/leagueMenu';
@@ -32,11 +33,29 @@ import { useLeagueStore } from '../../store/league';
 import { FixtureAttr, StandingsAttr } from '../../interfaces';
 import { pocketbase } from '../../pocketbase';
 import { useEffect, useState } from 'react';
+import StatCard from '../../components/cards/stat';
+import { SettingsIcon } from '@chakra-ui/icons';
+import AdminDrawer from './drawer.admin';
 
-export default function Home() {
+const stats = [
+  { label: 'Teams', value: '71' },
+  { label: 'Leagues', value: '56' },
+  { label: 'Users', value: '12' },
+];
+
+const Gap = ({ ...props }: BoxProps) => <Box h={4} {...props} />;
+
+export default function AdminHome() {
   const currentLeague = useLeagueStore((state) => state.currentLeague);
   const [standings, setStandings] = useState<StandingsAttr[]>([]);
   const [schedule, setSchedule] = useState<FixtureAttr>({});
+  const [stats, setStats] = useState<
+    { label: string; value: string; to: string; tip: string }[]
+  >([
+    { label: 'Teams', value: '0', to: '', tip: '' },
+    { label: 'Leagues', value: '0', to: '', tip: '' },
+    { label: 'Users', value: '0', to: '', tip: '' },
+  ]);
 
   const fetchStandings = async () => {
     try {
@@ -48,6 +67,38 @@ export default function Home() {
         });
 
       setStandings(standings.items);
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const teams = await pocketbase.collection('team').getList(1, 1);
+
+      const leagues = await pocketbase.collection('league').getList(1, 1);
+      const users = await pocketbase.collection('users').getList(1, 1);
+
+      setStats([
+        {
+          label: 'Teams',
+          value: teams.totalItems.toString(),
+          to: '/admin-leagues',
+          tip: 'Manage teams',
+        },
+        {
+          label: 'Leagues',
+          value: leagues.totalItems.toString(),
+          to: '/admin-leagues',
+          tip: 'Manage leagues',
+        },
+        {
+          label: 'Users',
+          value: users.totalItems.toString(),
+          to: '/admin-users',
+          tip: 'Manage users',
+        },
+      ]);
     } catch (error: any) {
       console.log(error);
     }
@@ -71,17 +122,29 @@ export default function Home() {
   };
 
   useEffect(() => {
+    fetchStats();
+  }, []);
+
+  useEffect(() => {
     fetchStandings();
     fetchUpcomingMatch();
   }, [currentLeague]);
 
   return (
-    <Container flex="1" minH="80dvh" background="gray.200" maxW="1440px">
-      <Box h={4}></Box>
+    <Box flex={1}>
+      <Box>
       {/* Schedule */}
       <LeagueMenu />
 
-      <Box my={4} mb={3}></Box>
+      <Gap mb={3} />
+
+      <SimpleGrid columns={{ base: 1, md: 3 }} gap={{ base: '5', md: '6' }}>
+        {stats.map((props) => (
+          <StatCard key={props.label} {...props} />
+        ))}
+      </SimpleGrid>
+
+      <Gap />
 
       <Card position="relative">
         <Flex justifyContent="space-between" alignItems="center" p={4}>
@@ -146,7 +209,7 @@ export default function Home() {
           <TableContainer>
             <Table size="sm" variant="simple">
               <TableCaption>
-                <Link to="/standing">
+                <Link to="/admin-fixtures">
                   <Tag
                     py={2}
                     px={4}
@@ -156,8 +219,8 @@ export default function Home() {
                     _hover={{ cursor: 'pointer' }}
                   >
                     <HStack>
-                      <Text>See full standing</Text>
-                      <Icon as={PiGreaterThanBold} boxSize="4" />
+                      <Text>Manage results</Text>
+                      <SettingsIcon boxSize="4" />
                     </HStack>
                   </Tag>
                 </Link>
@@ -197,7 +260,7 @@ export default function Home() {
         </CardBody>
       </Card>
 
-      <Box h={4}></Box>
-    </Container>
+      </Box>
+    </Box>
   );
 }

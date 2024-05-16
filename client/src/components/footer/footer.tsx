@@ -7,7 +7,7 @@ import {
 
 export default function Footer() {
   return (
-    <Box w="100%" bg="primary" h="70px" py="10px">
+    <Box bg="primary" minH="70px" py="10px" role="contentinfo">
       <Box
         display="flex"
         mx="auto"

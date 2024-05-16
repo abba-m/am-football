@@ -137,7 +137,7 @@ export default function Login({
           <form onSubmit={handleSubmit(handleLogin)}>
             <FormControl mb={6} isInvalid={!!errors.email}>
               <Input
-                type="text"
+                type="email"
                 w="100%"
                 {...register('email', {
                   required: 'Email is required for sign in',

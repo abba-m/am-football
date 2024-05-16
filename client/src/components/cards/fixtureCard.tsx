@@ -6,23 +6,53 @@ import {
   Heading,
   Icon,
   Text,
+  Tooltip,
 } from '@chakra-ui/react';
 import { TfiLocationPin } from 'react-icons/tfi';
 import { FixtureAttr } from '../../interfaces';
 import { formatDate, resolveFile } from '../../utils';
+import { SettingsIcon } from '@chakra-ui/icons';
 
 interface FixtureCardProp {
   fixture: FixtureAttr;
+  admin?: boolean;
+  setManageFixture?: (fixture: FixtureAttr) => void;
 }
 
-export default function FixtureCard({ fixture }: FixtureCardProp) {
-  const { expand, schedule, stage } = fixture;
+export default function FixtureCard({
+  fixture,
+  admin,
+  setManageFixture,
+}: FixtureCardProp) {
+  const { expand, schedule, stage, id } = fixture;
   const home = expand?.home;
   const away = expand?.away;
 
   return (
     <>
       <Flex justifyContent="space-between" alignItems="center" p={4}>
+        {admin && (
+          <Flex
+            gap={1}
+            position="relative"
+            cursor="pointer"
+            bottom={2}
+            right={2}
+            p={2}
+            onClick={() =>
+              typeof setManageFixture === 'function' &&
+              setManageFixture(fixture)
+            }
+          >
+            <Tooltip label="Manage result">
+              <SettingsIcon boxSize="6" />
+            </Tooltip>
+            {/* <Text fontSize="12px" decoration="underline" color="secondary">
+              Manage result
+            </Text> */}
+          </Flex>
+        )}
+
         <Box>
           <Text fontWeight="bold" fontStyle="oblique">
             {String(stage).toUpperCase()}
@@ -53,13 +83,10 @@ export default function FixtureCard({ fixture }: FixtureCardProp) {
                 {formatDate(schedule)}
               </Text>
               <Text>
-                {new Date(schedule || new Date()).toLocaleTimeString(
-                  [],
-                  {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  },
-                )}
+                {new Date(schedule || new Date()).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
               </Text>
             </Flex>
           </VStack>
